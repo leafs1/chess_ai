@@ -1,2 +1,2 @@
 # chess_ai
-Javascript program that is able to independently play chess well
+Python program that is able to independently play chess well
