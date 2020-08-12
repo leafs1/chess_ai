@@ -20,6 +20,7 @@ rookVal = 5
 queenVal = 9
 kingVal = 90 
 
+totalPoints = 0
 whitePoints = 0
 blackPoints = 0
 
@@ -77,26 +78,50 @@ def pointEval():
 
             if piece == "p" or piece == "P":
                 if highestPointDiff < 1:
+                    if piece == "p":
+                        totalPoints += pawnVal
+                    else:
+                        totalPoints -= pawnVal
                     highestPointDiff = pawnVal
                     optimalMove = str(i)
             elif piece == "n" or piece == "N":
                 if highestPointDiff < 3:
+                    if piece == "n":
+                        totalPoints += knightVal
+                    else:
+                        totalPoints -= knightVal
                     highestPointDiff = knightVal
                     optimalMove = str(i)
             elif piece == "b" or piece == "B":
                 if highestPointDiff < 3:
+                    if piece == "b":
+                        totalPoints += bishopVal
+                    else:
+                        totalPoints -= bishopVal
                     highestPointDiff = bishopVal
                     optimalMove = str(i)
             elif piece == "r" or piece == "R":
                 if highestPointDiff < 5:
+                    if piece == "r":
+                        totalPoints += rookVal
+                    else:
+                        totalPoints -= rookVal
                     highestPointDiff = rookVal
                     optimalMove = str(i)
             elif piece == "q" or piece == "Q":
                 if highestPointDiff < 9:
+                    if piece == "q":
+                        totalPoints += queenVal
+                    else:
+                        totalPoints -= queenVal
                     highestPointDiff = queenVal
                     optimalMove = str(i)
             elif piece == "k" or piece == "K":
                 if highestPointDiff < 90:
+                    if piece == "k":
+                        totalPoints += kingVal
+                    else:
+                        totalPoints -= kingVal
                     highestPointDiff = kingVal
                     optimalMove = str(i)
     
@@ -106,9 +131,6 @@ def pointEval():
         return optimalMove
         
 
-
-
-    
 
 
 
@@ -130,21 +152,4 @@ while board.is_game_over() != True:
 
     print(board)
     counter += 1
-
-'''
-print(randomMove())
-board.push_san(randomMove())
-board.push_san(randomMove())
-print(board)
-'''
-'''
-print(board.legal_moves)
-
-board.push_san("e4")
-a = board.legal_moves
-print()
-board.push_san("e5")
-print(board.legal_moves)
-'''
-
 
