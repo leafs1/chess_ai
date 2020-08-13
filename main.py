@@ -13,14 +13,13 @@ import time
 board = chess.Board()
 
 # Piece Values
-pawnVal = 1
-bishopVal = 3
-knightVal = 3
-rookVal = 5
-queenVal = 9
-kingVal = 90 
+pawnVal = 10
+bishopVal = 30
+knightVal = 30
+rookVal = 50
+queenVal = 90
+kingVal = 900
 
-totalPoints = 0
 whitePoints = 0
 blackPoints = 0
 
@@ -77,51 +76,27 @@ def pointEval():
             piece = str(board.piece_at(SANtoInt(move[1])))
 
             if piece == "p" or piece == "P":
-                if highestPointDiff < 1:
-                    if piece == "p":
-                        totalPoints += pawnVal
-                    else:
-                        totalPoints -= pawnVal
+                if highestPointDiff < 10:
                     highestPointDiff = pawnVal
                     optimalMove = str(i)
             elif piece == "n" or piece == "N":
-                if highestPointDiff < 3:
-                    if piece == "n":
-                        totalPoints += knightVal
-                    else:
-                        totalPoints -= knightVal
+                if highestPointDiff < 30:
                     highestPointDiff = knightVal
                     optimalMove = str(i)
             elif piece == "b" or piece == "B":
-                if highestPointDiff < 3:
-                    if piece == "b":
-                        totalPoints += bishopVal
-                    else:
-                        totalPoints -= bishopVal
+                if highestPointDiff < 30:
                     highestPointDiff = bishopVal
                     optimalMove = str(i)
             elif piece == "r" or piece == "R":
-                if highestPointDiff < 5:
-                    if piece == "r":
-                        totalPoints += rookVal
-                    else:
-                        totalPoints -= rookVal
+                if highestPointDiff < 50:
                     highestPointDiff = rookVal
                     optimalMove = str(i)
             elif piece == "q" or piece == "Q":
-                if highestPointDiff < 9:
-                    if piece == "q":
-                        totalPoints += queenVal
-                    else:
-                        totalPoints -= queenVal
+                if highestPointDiff < 90:
                     highestPointDiff = queenVal
                     optimalMove = str(i)
             elif piece == "k" or piece == "K":
-                if highestPointDiff < 90:
-                    if piece == "k":
-                        totalPoints += kingVal
-                    else:
-                        totalPoints -= kingVal
+                if highestPointDiff < 900:
                     highestPointDiff = kingVal
                     optimalMove = str(i)
     
@@ -131,25 +106,134 @@ def pointEval():
         return optimalMove
         
 
+def minimaxRoot(depth, board, maximizingPlayer):
+    possibleMoves = board.legal_moves
+    bestMove = -9999
+    secondBest = -9999
+    thirdBest = -9999
+    bestMoveFinal = None
+    for x in possibleMoves:
+        move = chess.Move.from_uci(str(x))
+        board.push(move)
+        #print("new board")
+        #print(board)
+        minimaxTest = minimax(depth=depth - 1, board=board, maximizingPlayer=not maximizingPlayer)
+        #print("minimaxTest")
+        value = max(bestMove, minimaxTest)
+        #print("after testing")
+        board.pop()
+        if( value > bestMove):
+            print("Best score: " ,str(bestMove))
+            print("Best move: ",str(bestMoveFinal))
+            print("Second best: ", str(secondBest))
+            thirdBest = secondBest
+            secondBest = bestMove
+            bestMove = value
+            bestMoveFinal = move
+    return bestMoveFinal
 
+def minimax(depth, board, maximizingPlayer):
+    # https://en.wikipedia.org/wiki/Minimax
+    # https://github.com/AnthonyASanchez/PythonChessAi
+
+    
+    #print("test board")
+    #print(board)
+   # print(depth)
+    #print(maximizingPlayer)
+    moves = board.legal_moves
+
+    if depth == 0:
+       # print("depth 00")
+        return -evaluation(board, maximizingPlayer)
+
+    #print("after depth")
+
+    # If it's white's turn (white wants to maximize their score)
+    if maximizingPlayer:    
+        value = -9999
+        for i in moves:     
+            board.push(chess.Move.from_uci(str(i)))
+            value = max(value, minimax(depth-1, board, not maximizingPlayer))
+            board.pop()
+        return value
+    else:
+        # Black's turn (black wants to minimize their score)
+        value = 9999
+        for i in moves:
+            board.push(chess.Move.from_uci(str(i)))
+            value = min(value, minimax(depth-1, board, not maximizingPlayer))
+            board.pop()
+        return value
+
+def evaluation(board, maximizingPlayer):
+    boardPos = 0
+    evaluation = 0
+
+    while boardPos < 64:
+        evaluation += getPieceValue(str(board.piece_at(boardPos)))
+        boardPos += 1
+    
+    #print("in evaluation")
+    #print(evaluation)
+    return evaluation
+
+
+def getPieceValue(piece):
+    if(piece == None):
+        return 0
+    value = 0
+    if piece == "P" or piece == "p":
+        value = 10
+    if piece == "N" or piece == "n":
+        value = 30
+    if piece == "B" or piece == "b":
+        value = 30
+    if piece == "R" or piece == "r":
+        value = 50
+    if piece == "Q" or piece == "q":
+        value = 90
+    if piece == 'K' or piece == 'k':
+        value = 900
+    return value
+    
+
+    
 
 
 counter = 1
+n = 0
+
 # Main loop
 while board.is_game_over() != True:
-    print(counter)
-    print(pointEval())
-    print(board.is_game_over())
+   # print(counter)
+    #print(pointEval())
+    #print(board.is_game_over())
     #print(board.piece_at(9))
     #print(chess.Move.from_uci('e2e4'))
     #board.push_uci(randomMove())
-    board.push_uci(pointEval())
+    #board.push_uci(pointEval())
+    #print(board)
+
+    #move = str(input("move"))
+    #board.push_uci(move)
+
     print(board)
-
-    move = str(input("move"))
-    board.push_uci(move)
-
-
+    
+    if n%2 == 0:
+        move = input("Enter move: ")
+        move = chess.Move.from_uci(str(move))
+        board.push(move)
+    else:
+        print("Computers Turn:")
+        move = minimaxRoot(3,board,True)
+        print("move = " + str(move))
+        move = chess.Move.from_uci(str(move))
+        board.push(move)
     print(board)
+    print("end")
+    n += 1
+
+
     counter += 1
 
