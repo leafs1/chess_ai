@@ -109,30 +109,24 @@ def pointEval():
 def minimaxRoot(depth, board, maximizingPlayer):
     possibleMoves = board.legal_moves
     bestMove = -9999
-    secondBest = -9999
-    thirdBest = -9999
     bestMoveFinal = None
     for x in possibleMoves:
         move = chess.Move.from_uci(str(x))
         board.push(move)
         #print("new board")
         #print(board)
-        minimaxTest = minimax(depth=depth - 1, board=board, maximizingPlayer=not maximizingPlayer)
-        #print("minimaxTest")
-        value = max(bestMove, minimaxTest)
+        value = max(bestMove, minimax(depth - 1, board, -10000, 10000, not maximizingPlayer))
         #print("after testing")
         board.pop()
-        if( value > bestMove):
+        print(str(move) + " " + str(value))
+        if (value > bestMove):
             print("Best score: " ,str(bestMove))
             print("Best move: ",str(bestMoveFinal))
-            print("Second best: ", str(secondBest))
-            thirdBest = secondBest
-            secondBest = bestMove
             bestMove = value
             bestMoveFinal = move
     return bestMoveFinal
 
-def minimax(depth, board, maximizingPlayer):
+def minimax(depth, board, alpha, beta, maximizingPlayer):
     # https://en.wikipedia.org/wiki/Minimax
     # https://github.com/AnthonyASanchez/PythonChessAi
 
@@ -154,16 +148,22 @@ def minimax(depth, board, maximizingPlayer):
         value = -9999
         for i in moves:     
             board.push(chess.Move.from_uci(str(i)))
-            value = max(value, minimax(depth-1, board, not maximizingPlayer))
+            value = max(value, minimax(depth-1, board, alpha, beta, not maximizingPlayer))
             board.pop()
+            alpha = max(alpha, value)
+            if beta <= alpha:
+                return value
         return value
     else:
         # Black's turn (black wants to minimize their score)
         value = 9999
         for i in moves:
             board.push(chess.Move.from_uci(str(i)))
-            value = min(value, minimax(depth-1, board, not maximizingPlayer))
+            value = min(value, minimax(depth-1, board, alpha, beta, not maximizingPlayer))
             board.pop()
+            beta = min(beta, value)
+            if beta <= alpha:
+                return value
         return value
 
 def evaluation(board, maximizingPlayer):
@@ -226,7 +226,7 @@ while board.is_game_over() != True:
         board.push(move)
     else:
         print("Computers Turn:")
-        move = minimaxRoot(3,board,True)
+        move = minimaxRoot(5,board,True)
         print("move = " + str(move))
         move = chess.Move.from_uci(str(move))
         board.push(move)
