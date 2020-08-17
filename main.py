@@ -230,8 +230,8 @@ while board.is_game_over() != True:
         print("move = " + str(move))
         move = chess.Move.from_uci(str(move))
         board.push(move)
-    print(board)
-    print("end")
+    #print(board)
+    #print("end")
     n += 1
 
 
